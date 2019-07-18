@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 //*** Created by Quick's on 10/14/2017.
 
@@ -44,19 +45,23 @@ public class Demo extends OpMode {
     boolean dumpedsilver = false;
     double tdmid =.365;
     int wheelie = -3000;
+    double leftpower = 0;
+    double rightpower = 0;
+    double xvalue = 0;
+    double yvalue = 0;
 
     @Override
     public void init() {
 
         robot.init(hardwareMap);
 
-        //robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //robot.intakearm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //robot.intakearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.intakearm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.intakearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.latch.setPosition(0);
-        state = 1;
+        state = 0;
     }
 
     @Override
@@ -67,26 +72,20 @@ public class Demo extends OpMode {
             robot.intakearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             once = false;
         }
-        if(gamepad1.right_trigger > 0 && !gamepad1.a && gamepad1.left_trigger < 0.1){
-            left = .2*gamepad1.left_trigger;
-            right = -.35*gamepad1.right_trigger;
-        }
-        else if(gamepad1.left_trigger > 0 && !gamepad1.a && gamepad1.right_trigger < 0.1){
-            left = -.35*gamepad1.left_trigger;
-            right = .2*gamepad1.right_trigger;
-        }
-        else if(gamepad1.left_trigger > 0 && !gamepad1.a && gamepad1.right_trigger >0){
-            left = -gamepad1.left_trigger * .28;
-            right = -gamepad1.right_trigger * .28;
-        }
-        else if(gamepad1.left_bumper){
-            left = .28;
-            right = .28;
-        }
-        else{
-            left = -gamepad1.left_stick_y;
-            right = -gamepad1.right_stick_y;
-        }
+
+        xvalue = gamepad1.right_stick_x *-1;
+        yvalue = gamepad1.right_stick_y *-1;
+
+        leftpower = yvalue - xvalue;
+        rightpower = yvalue + xvalue;
+
+        robot.left_front_drive.setPower(Range.clip(leftpower,-1.0,1.0));
+        robot.left_rear_drive.setPower(Range.clip(leftpower,-1.0,1.0));
+        robot.right_front_drive.setPower(Range.clip(rightpower,-1.0,1.0));
+        robot.right_rear_drive.setPower(Range.clip(rightpower,-1.0,1.0));
+
+
+
 
         if(gamepad1.right_trigger>.95 && gamepad1.left_trigger>.95 && gamepad1.a){
             state = 999;
@@ -133,10 +132,6 @@ public class Demo extends OpMode {
             }
         }
 
-        robot.right_front_drive.setPower(right);
-        robot.right_rear_drive.setPower(right);
-        robot.left_front_drive.setPower(left);
-        robot.left_rear_drive.setPower(left);
 
         //telemetry.addData("state", state);
         //telemetry.addData("ready", ready);

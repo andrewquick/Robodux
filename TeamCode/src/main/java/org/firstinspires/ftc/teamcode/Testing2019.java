@@ -20,6 +20,8 @@ public class Testing2019 extends OpMode{
     public Servo servo1 = null;
     public Servo servo2 = null;
 
+    double open = .25;
+
 
     @Override
     public void init() {
